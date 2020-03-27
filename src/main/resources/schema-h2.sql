@@ -1,3 +1,12 @@
+DROP TABLE IF EXISTS HOME;
+
+CREATE TABLE HOME (
+                      ID INT NOT NULL AUTO_INCREMENT,
+                      ADDRESS VARCHAR2(255) not null default '',
+                      HOMENUMBER varchar2(255) NOT NULL DEFAULT '',
+                      PRIMARY KEY (ID)
+);
+
 DROP TABLE IF EXISTS PERSON;
 
 CREATE TABLE PERSON (
@@ -12,16 +21,6 @@ CREATE TABLE PERSON (
   ALTER TABLE PERSON
   ADD FOREIGN KEY (HOME_ID)
   REFERENCES HOME(ID);
-
-
-DROP TABLE IF EXISTS HOME;
-
-CREATE TABLE HOME (
-  ID INT NOT NULL AUTO_INCREMENT,
-  ADDRESS VARCHAR2(255) not null default '',
-  HOMENUMBER varchar2(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (ID)
-);
 
 DROP TABLE IF EXISTS movies;
 
@@ -61,6 +60,6 @@ CREATE TABLE auto_prices (
 );
 
 
-DROP SEQUENCE hibernate_sequence;
+//DROP SEQUENCE hibernate_sequence;
 
 CREATE SEQUENCE hibernate_sequence;
