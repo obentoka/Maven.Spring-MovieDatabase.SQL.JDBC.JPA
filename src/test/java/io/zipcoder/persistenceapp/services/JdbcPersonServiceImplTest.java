@@ -24,7 +24,7 @@ public class JdbcPersonServiceImplTest {
 
     @Before
     public void init(){
-//        service = new JdbcPersonServiceImpl();
+        service = new JdbcPersonServiceImpl();
         testPerson = new Person();
     }
 
