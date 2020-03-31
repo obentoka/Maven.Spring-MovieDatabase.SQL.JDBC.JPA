@@ -10,7 +10,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class PersonService {
@@ -74,6 +79,14 @@ public class PersonService {
             return false;
     }
 
+    public Boolean deleteAll(Iterable<Person> personList){
+        Boolean retBool = false;
+        for(Person p : personList){
+            retBool = deletePerson(p.getId());
+        }
+        return retBool;
+    }
+
     public Iterable<Person> findAllByFirstName(String firstName){
         String sql = "SELECT * FROM PERSON WHERE FIRST_NAME = ?;";
         return jdbcTemplate.query(sql, new Object[]{firstName}, new PersonRowMapper());
@@ -97,5 +110,55 @@ public class PersonService {
     public Iterable<Person> findAllByHomeId(Long homeid){
         String sql = "SELECT * FROM PERSON WHERE HOME_ID = ?;";
         return jdbcTemplate.query(sql, new Object[]{homeid}, new PersonRowMapper());
+    }
+
+    public List<String> getAllSurNames(){
+        String sql = "SELECT DISTINCT LAST_NAME FROM PERSON;";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    public List<String> getAllFirstNames(){
+        String sql = "SELECT DISTINCT FIRST_NAME FROM PERSON;";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    public Map<String, Iterable<Person>> mapLastName(){
+        Map<String, Iterable<Person>> retMap = new LinkedHashMap<>();
+        List<String> lastName = getAllSurNames();
+        String sql = "SELECT * FROM PERSON WHERE LAST_NAME = ?;";
+        for(String lName : lastName){
+            retMap.put(lName, jdbcTemplate.query(sql, new Object[]{lName}, new PersonRowMapper()));
+        }
+        return retMap;
+    }
+
+    public Map<String, Iterable<Person>> mapFirstName(){
+        Map<String, Iterable<Person>> retMap = new LinkedHashMap<>();
+        List<String> firstName = getAllFirstNames();
+        String sql = "SELECT * FROM PERSON WHERE FIRST_NAME = ?;";
+        for(String fName : firstName){
+            retMap.put(fName, jdbcTemplate.query(sql, new Object[]{fName}, new PersonRowMapper()));
+        }
+        return retMap;
+    }
+
+    public Map<String, Integer> getSurNameReport(){
+        Map<String, Integer> retMap = new LinkedHashMap<>();
+        List<String> lastName = getAllSurNames();
+        for(String lName : lastName){
+            String sql = "SELECT COUNT(*) FROM PERSON WHERE LAST_NAME = ?;";
+            retMap.put(lName, jdbcTemplate.queryForObject(sql, new Object[]{lName}, Integer.class));
+        }
+        return retMap;
+    }
+
+    public Map<String, Integer> getFirstNameReport(){
+        Map<String, Integer> retMap = new LinkedHashMap<>();
+        List<String> firstName = getAllFirstNames();
+        for(String fName : firstName){
+            String sql = "SELECT COUNT(*) FROM PERSON WHERE FIRST_NAME = ?;";
+            retMap.put(fName, jdbcTemplate.queryForObject(sql, new Object[]{fName}, Integer.class));
+        }
+        return retMap;
     }
 }

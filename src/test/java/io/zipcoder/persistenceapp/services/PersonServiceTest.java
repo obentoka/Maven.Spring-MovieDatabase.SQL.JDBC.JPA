@@ -7,8 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -22,7 +21,7 @@ public class PersonServiceTest {
     Person testPerson;
 
     @Before
-    public void initi(){
+    public void init(){
         service = new PersonService();
         testPerson = new Person();
     }
@@ -112,6 +111,24 @@ public class PersonServiceTest {
     public void deleteTest2(){
         assertTrue(service.deletePerson(1L));
         assertNull(service.findPersonById(1L));
+    }
+
+    @Test
+    public void deleteAllTest(){
+        List<Person> listPerson = new ArrayList<>();
+        listPerson.add(new Person(1L, "Carbral", "Sheeri", "230-4233", "1970-02-23", 2L));
+        listPerson.add(new Person(2L,"Sharam", "Raj", "186-5223", "1980-08-31", 3L));
+        listPerson.add(new Person(3L,"Durand", "Noelle", "395-6161", "1960-07-06", 1L));
+        assertTrue(service.deleteAll(listPerson));
+        assertNull(service.findPersonById(1L));
+        assertNull(service.findPersonById(2L));
+        assertNull(service.findPersonById(3L));
+    }
+
+    @Test
+    public void deleteAllTest2(){
+        List<Person> listPerson = new ArrayList<>();
+        assertFalse(service.deleteAll(listPerson));
     }
 
     @Test
@@ -210,5 +227,61 @@ public class PersonServiceTest {
                         assertEquals(currPerson.getHomeId(), listPerson.get(i.getAndIncrement()).getHomeId());
                     }
                 });
+    }
+
+    @Test
+    public void getAllSurNamesTest(){
+        String[] lastNames = new String[]{"Brown", "Sharam", "Smith", "Durand", "Carbral"};
+        List<String> lnAsList = new LinkedList<>(Arrays.asList(lastNames));
+        Stream.of(service.getAllSurNames())
+                .forEach(x -> assertTrue(lnAsList.contains(x.iterator().next())));
+    }
+
+    @Test
+    public void getAllFirstNamesTest(){
+        String[] firstNames = new String[]{"Sheeri", "Raj", "Noelle", "Thomas", "Jane", "Doug"};
+        List<String> fnAsList = new LinkedList<>(Arrays.asList(firstNames));
+        Stream.of(service.getAllFirstNames())
+                .forEach(x -> assertTrue(fnAsList.contains(x.iterator().next())));
+    }
+
+    @Test
+    public void mapLastNameTest(){
+        Map<String, Iterable<Person>> actual = service.mapLastName();
+        Person expected = new Person(3L,"Durand", "Noelle", "395-6161", "1960-07-06", 1L);
+        for(Person p : actual.get("Durand")){
+            assertEquals(expected.getBirthday(), p.getBirthday());
+            assertEquals(expected.getLastName(), p.getLastName());
+            assertEquals(expected.getFirstName(), p.getFirstName());
+            assertEquals(expected.getHomeId(), p.getHomeId());
+            assertEquals(expected.getMobile(), p.getMobile());
+        }
+
+    }
+
+    @Test
+    public void mapFirstNameTest(){
+        Map<String, Iterable<Person>> actual = service.mapFirstName();
+        Person expected = new Person(3L,"Durand", "Noelle", "395-6161", "1960-07-06", 1L);
+        for(Person p : actual.get("Noelle")){
+            assertEquals(expected.getBirthday(), p.getBirthday());
+            assertEquals(expected.getLastName(), p.getLastName());
+            assertEquals(expected.getFirstName(), p.getFirstName());
+            assertEquals(expected.getHomeId(), p.getHomeId());
+            assertEquals(expected.getMobile(), p.getMobile());
+        }
+
+    }
+
+    @Test
+    public void getSurNameReportTest(){
+        Map<String, Integer> actual = service.getSurNameReport();
+        assertEquals(2, actual.get("Smith"));
+    }
+
+    @Test
+    public void getFirstNameReportTest(){
+        Map<String, Integer> actual = service.getFirstNameReport();
+        assertEquals(1, actual.get("Jane"));
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 public class PersonController {
 
@@ -43,12 +45,17 @@ public class PersonController {
         return new ResponseEntity<>(personService.deletePerson(id), HttpStatus.NOT_FOUND);
     }
 
+    @DeleteMapping("/people/all")
+    public ResponseEntity<Boolean> deleteAll(@RequestBody Iterable<Person> personList){
+        return new ResponseEntity<>(personService.deleteAll(personList), HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping("people/firstname/{firstName}")
     public ResponseEntity<Iterable<Person>> findByFirstName(@PathVariable String firstName){
         return new ResponseEntity<>(personService.findAllByFirstName(firstName), HttpStatus.OK);
     }
 
-    @GetMapping("people/lastname/{lastName}")
+    @GetMapping("people/surname/{lastName}")
     public ResponseEntity<Iterable<Person>> findByLastName(@PathVariable String lastname){
         return new ResponseEntity<>(personService.findAllByLastName(lastname), HttpStatus.OK);
     }
@@ -58,7 +65,7 @@ public class PersonController {
         return new ResponseEntity<>(personService.findAllByDOB(birthday), HttpStatus.OK);
     }
 
-    @GetMapping("people/mobile/{mobile}")
+    @GetMapping("people/reverselookup/{mobile}")
     public ResponseEntity<Iterable<Person>> findByMobile(@PathVariable String mobile){
         return new ResponseEntity<>(personService.findAllByMobile(mobile), HttpStatus.OK);
     }
@@ -66,5 +73,25 @@ public class PersonController {
     @GetMapping("people/homeid/{homeid}")
     public ResponseEntity<Iterable<Person>> findByMobile(@PathVariable Long homid){
         return new ResponseEntity<>(personService.findAllByHomeId(homid), HttpStatus.OK);
+    }
+
+    @GetMapping("/people/surname/")
+    public ResponseEntity<Map<String, Iterable<Person>>> getSurNameMap(){
+        return new ResponseEntity<>(personService.mapLastName(), HttpStatus.OK);
+    }
+
+    @GetMapping("/people/firstname/")
+    public ResponseEntity<Map<String, Iterable<Person>>> getFirstNameMap(){
+        return new ResponseEntity<>(personService.mapFirstName(), HttpStatus.OK);
+    }
+
+    @GetMapping("/people/surname/stats")
+    public ResponseEntity<Map<String, Integer>> getLastNameReport(){
+        return new ResponseEntity<>(personService.getSurNameReport(), HttpStatus.OK);
+    }
+
+    @GetMapping("/people/firstname/stats")
+    public ResponseEntity<Map<String, Integer>> getFirstNameReport(){
+        return new ResponseEntity<>(personService.getFirstNameReport(), HttpStatus.OK);
     }
 }
