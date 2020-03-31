@@ -1,11 +1,18 @@
 package io.zipcoder.persistenceapp.services;
 
 import io.zipcoder.persistenceapp.models.Person;
+import io.zipcoder.persistenceapp.repositories.PersonRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,19 +22,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PersonServiceTest {
+public class JpaPersonServiceImplTest {
 
     PersonService service;
+    @Autowired
+    PersonRepository repository;
     Person testPerson;
 
     @Before
     public void init(){
-        service = new PersonService();
+        service = new JpaPersonServiceImpl(repository);
         testPerson = new Person();
     }
 
     @Test
-    public void findTest(){
+    public void findTest() throws Exception {
         testPerson = new Person(1L, "Carbral", "Sheeri",
                 "230-4233", "1970-02-23", 2L);
 
@@ -65,17 +74,17 @@ public class PersonServiceTest {
         listPerson.add(new Person(6L, "Brown", "Doug", "466-6241", "1954-12-07", 3L));
         AtomicInteger i = new AtomicInteger(0);
         Stream.of(service.findAll())
-            .map(Iterable::iterator)
-            .forEachOrdered(x -> {
-                if(x.hasNext()) {
-                    Person currPerson = x.next();
-                    assertEquals(currPerson.getLastName(), listPerson.get(i.get()).getLastName());
-                    assertEquals(currPerson.getFirstName(), listPerson.get(i.get()).getFirstName());
-                    assertEquals(currPerson.getMobile(), listPerson.get(i.get()).getMobile());
-                    assertEquals(currPerson.getBirthday(), listPerson.get(i.get()).getBirthday());
-                    assertEquals(currPerson.getHomeId(), listPerson.get(i.getAndIncrement()).getHomeId());
-                }
-            });
+                .map(Iterable::iterator)
+                .forEachOrdered(x -> {
+                    if(x.hasNext()) {
+                        Person currPerson = x.next();
+                        assertEquals(currPerson.getLastName(), listPerson.get(i.get()).getLastName());
+                        assertEquals(currPerson.getFirstName(), listPerson.get(i.get()).getFirstName());
+                        assertEquals(currPerson.getMobile(), listPerson.get(i.get()).getMobile());
+                        assertEquals(currPerson.getBirthday(), listPerson.get(i.get()).getBirthday());
+                        assertEquals(currPerson.getHomeId(), listPerson.get(i.getAndIncrement()).getHomeId());
+                    }
+                });
     }
 
     @Test

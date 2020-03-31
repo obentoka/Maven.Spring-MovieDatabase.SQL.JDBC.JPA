@@ -3,11 +3,15 @@ package io.zipcoder.persistenceapp.models;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Objects;
 
+@Entity
 public class Person {
 
+    @Id
     private Long id;
     private String lastName;
     private String firstName;
@@ -85,17 +89,7 @@ public class Person {
         this.homeId = homeId;
     }
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", lastName='" + lastName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", birthday='" + birthday + '\'' +
-                ", homeId=" + homeId +
-                '}';
-    }
+
 
     @Override
     public boolean equals(Object o) {
